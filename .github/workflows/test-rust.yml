@@ -14,6 +14,7 @@ on:
       - "litellm/litellm_core_utils/litellm_logging.py"
       - "litellm/litellm_core_utils/logging_worker.py"
       - "litellm/proxy/guardrails/**"
+      - "litellm/proxy/**"
       - "litellm/utils.py"
       - "litellm/ocr/**"
       - "litellm/llms/base_llm/ocr/**"
