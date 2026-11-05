@@ -339,14 +339,26 @@ async def _resolve_router_settings_model_group_alias(
     rewrite_request_model(request_data, request, target)
 
 
+from litellm.proxy.litellm_pre_call_utils import resolve_wildcard_prefixed_model
+
+
 def _get_model_names_for_budget_checks(
     model: str | list[str] | None,
 ) -> list[str]:
     if model is None:
         return []
-    if isinstance(model, str):
-        return [model]
-    return model
+    base_models: list[str] = [model] if isinstance(model, str) else list(model)
+    if litellm.enable_model_prefix_enforcement:
+        expanded: list[str] = []
+        for m in base_models:
+            if m not in expanded:
+                expanded.append(m)
+            if isinstance(m, str):
+                resolved = resolve_wildcard_prefixed_model(model=m)
+                if resolved is not None and resolved not in expanded:
+                    expanded.append(resolved)
+        return expanded
+    return base_models
 
 
 def _budget_fallback_target_model(target: object) -> str | None:
